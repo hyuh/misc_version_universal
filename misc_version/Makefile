@@ -1,4 +1,4 @@
-VERSION = 0.8
+VERSION = 0.01
 CC      = /usr/bin/arm-linux-gnueabi-gcc
 CFLAGS  = -Wall -g -D_REENTRANT -DVERSION=\"$(VERSION)\"
 INCDIR	= -I/usr/arm-linux-gnueabi/usr/include/ -I.
@@ -6,8 +6,8 @@ LIBDIR  = /usr/arm-linux-gnueabi/lib/
 LDFLAGS = -L$(LIBDIR) -static
 RM      = rm -f
 
-TRG = incsfree
-OBJ = gopt.o incsfree.o 
+TRG = misc_version
+OBJ = gopt.o misc_version.o 
 
 all: $(OBJ)
 	$(CC) $(CFLAGS) $(INCDIR) -o $(TRG) $(OBJ) $(LDFLAGS)
@@ -18,5 +18,4 @@ all: $(OBJ)
 clean:
 	$(RM) *.o
 	$(RM) *.d
-	$(RM) incsfree
-	
+	$(RM) misc_version
