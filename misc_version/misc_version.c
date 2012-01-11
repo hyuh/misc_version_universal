@@ -76,7 +76,7 @@ int main(int argc, const char **argv) {
 			// if -a or --set_version was specified, check s_set_version
 			size_t size;
 			size = strlen(s_set_version);
-			if (size < 7 || size > 14 ){
+			if (size < 7 || size > 15 ){
 				fprintf( stderr, "Error: VERSION must be a 7-14 character string. Length of specified string: %d\n",(int)size);
 				exit (1);
 			} else {
@@ -122,7 +122,9 @@ int main(int argc, const char **argv) {
 	char *OUTFILE = INFILE;
 	fclose(fdin);
 
-	char version[14];
+	char version[15];
+	// initialize maximum length version string to all 0x0 in case the older version was longer
+	// version is NULL terminated, if old version was longer it will corrupt new version
 	memset(version, '\0', sizeof(version));
 	memcpy(version, s_set_version, strlen(s_set_version));
 
