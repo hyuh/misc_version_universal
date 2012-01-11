@@ -76,7 +76,7 @@ int main(int argc, const char **argv) {
 			// if -a or --set_version was specified, check s_set_version
 			size_t size;
 			size = strlen(s_set_version);
-			if (size < 7 || size > 15 ){
+			if (size < 7 || size > 14 ){
 				fprintf( stderr, "Error: VERSION must be a 7-14 character string. Length of specified string: %d\n",(int)size);
 				exit (1);
 			} else {
