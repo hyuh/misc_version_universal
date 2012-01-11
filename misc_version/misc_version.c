@@ -21,9 +21,9 @@
 #include <time.h>
 #include <string.h>
 
-#define INFILE "/dev/block/mmcblk0p17"
-#define OUTFILE "/dev/block/mmcblk0p17"
-#define BACKUPFILE "/sdcard/part17backup-%lu.bin"
+//#define INFILE "/dev/block/mmcblk0p17"
+//#define OUTFILE "/dev/block/mmcblk0p17"
+#define BACKUPFILE "/data/local/miscbackup-%lu.bin"
 
 //#define INFILE "/opt/install/g2/my_dump/p17/mmcblk0p17.img"
 //#define OUTFILE "/opt/install/g2/my_dump/p17/mmcblk0p17-new.img"
@@ -36,7 +36,7 @@ int main(int argc, const char **argv) {
 
 	int cid = 0, set_version = 0, help = 0;
 	const char* s_set_version;
-    const char* s_cid;
+	const char* s_cid;
 
 	if (argc>1) {
 
@@ -76,8 +76,8 @@ int main(int argc, const char **argv) {
 			// if -a or --set_version was specified, check s_set_version
 			size_t size;
 			size = strlen(s_set_version);
-			if (size!=10){
-				fprintf( stderr, "Error: VERSION must be a 10 character string. Length of specified string: %d\n",(int)size);
+			if (size < 7 || size > 14 ){
+				fprintf( stderr, "Error: VERSION must be a 7-14 character string. Length of specified string: %d\n",(int)size);
 				exit (1);
 			} else {
 				set_version = 1;
@@ -99,18 +99,44 @@ int main(int argc, const char **argv) {
 		fprintf( stdout, "\t-s | --set_version <VERSION>:  set the version in misc to the 10-char long VERSION\n" );
 		exit(0);
 	}
-
-    char *backupFile;
-    time_t ourTime;
-
-    ourTime = time(0);
-    backupFile = malloc(snprintf(0, 0, BACKUPFILE, ourTime) + 1);
-    sprintf(backupFile, BACKUPFILE, ourTime);
-
 	FILE *fdin, *fdout;
+        fdin = fopen("/proc/emmc", "r");
+        if ( fdin == NULL ) {
+                fprintf(stderr, "Not a valid EMMC device\n");
+                return(-1);
+        }
+
+        char buffer[256];
+        char *line;
+
+        line = fgets(buffer, 256, fdin);
+
+        while ( strstr(line, "\"misc\"") == NULL ) {
+                line = fgets(buffer, 256, fdin);
+        }
+        char *part = strtok( line, ":");
+        char *INFILE = malloc(256 * sizeof(char) );
+        strcpy(INFILE, "/dev/block/");
+        strcat(INFILE, part);
+        printf( "Misc partition is \"%s\"\n", INFILE );
+	char *OUTFILE = INFILE;
+	fclose(fdin);
+
+	char version[14];
+	memset(version, '\0', sizeof(version));
+	memcpy(version, s_set_version, strlen(s_set_version));
+
+
+	char *backupFile;
+	time_t ourTime;
+
+	ourTime = time(0);
+	backupFile = malloc(snprintf(0, 0, BACKUPFILE, ourTime) + 1);
+	sprintf(backupFile, BACKUPFILE, ourTime);
+
 	char ch;
 
-    printf("Patching and backing up partition 17...\n");
+	printf("Patching and backing up misc partition...\n");
 	fdin = fopen(INFILE, "rb");
 	if (fdin == NULL){
 		printf("Error opening input file.\n");
@@ -174,8 +200,8 @@ int main(int argc, const char **argv) {
 			ch = s_cid[j];
 		}
 		// VERSION
-		if ((j>=0xa0 && j<=0xa9)&& (set_version!=0)) {
-			ch = s_set_version[j-0xa0];
+		if ((j>=0xa0 && j<=0xae)&& (set_version!=0)) {
+			ch = version[j-0xa0];
 		}
 		if(!feof(fdin)) fputc(ch, fdout);
 		if(ferror(fdout)) {
