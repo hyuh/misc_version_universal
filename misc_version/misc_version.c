@@ -156,10 +156,12 @@ int main(int argc, const char **argv) {
 			return -1;
 		}
 
-		fdout = fopen(backupFile, "wb");
-		if (fdout == NULL){
-			fprintf(stderr, "Error opening backup file.\n");
-			return -1;
+		if ( getcid == 0 ) {
+			fdout = fopen(backupFile, "wb");
+			if (fdout == NULL){
+				fprintf(stderr, "Error opening backup file.\n");
+				return -1;
+			}
 		}
 
 		//  create a copy of the partition
