@@ -1,18 +1,18 @@
 VERSION = 0.01
-CC      = /usr/bin/arm-linux-gnueabi-gcc
-STRIP   = /usr/bin/arm-linux-gnueabi-strip
+CC      = gcc
+STRIP   = strip
 CFLAGS  = -Wall -g -D_REENTRANT -DVERSION=\"$(VERSION)\"
-INCDIR	= -I/usr/arm-linux-gnueabi/usr/include/ -I.
-LIBDIR  = /usr/arm-linux-gnueabi/lib/
+INCDIR	= -I/usr/include/ -I.
+LIBDIR  = /usr/lib/
 LDFLAGS = -L$(LIBDIR) -static
 RM      = rm -f
 
-TRG = misc_version
+TRG = misc_bricked
 OBJ = gopt.o misc_version.o 
 
 all: $(OBJ)
 	$(CC) $(CFLAGS) $(INCDIR) -o $(TRG) $(OBJ) $(LDFLAGS)
-	$(STRIP) --strip-all misc_version
+	$(STRIP) --strip-all misc_bricked
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
